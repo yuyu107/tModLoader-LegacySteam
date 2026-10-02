@@ -1,0 +1,7 @@
+﻿$LegacySteamVersion = '0.1.0-test'
+$LegacySteamTargets = @(
+ @{ Path='Libraries\steamworks.net.anycpu\2025.162.4\lib\net8.0\Steamworks.NET.dll'; Original='c292a77537b2ca8083a055442f957b53f330da522e2472a5aad8e1b00bdacfff'; Patched='3054a1919137b857b9b43fdd51279f252d33e76793168fda6845472acb6aeba0'; PatchFile='patches\00.lsp'; PatchHash='1e48515366bb9cbf03e80beeec68d54f99eb850c0a597b7b197fc17e5b9a4e2e' },
+ @{ Path='Libraries\steamworks.net.anycpu\2025.162.4\runtimes\win\lib\net8.0\Steamworks.NET.dll'; Original='f9efa5d01d4606379236411fd884664531f5a1bc0d60141024975929af91a8d8'; Patched='42942a974cf19ab0e958f62e1b4ce772f8474463ead51ce4f7d99164093b4604'; PatchFile='patches\01.lsp'; PatchHash='0df6571f4a3056bf3c1a7b64d4f43dbffa6ded51b3d361cb65440da3eb58168a' },
+ @{ Path='Libraries\steamworks.net.anycpu\2025.162.4\runtimes\win-x64\native\steam_api64.dll'; Original='e082bf5c9f881c822b1540a76b74f9d15e18019a73ebd206a559595badcb7f65'; Patched='b87996307d1742b8c013baec1a3dfb346ac8c8f20486dfe8076d72b13d97287e'; PatchFile='patches\02.lsp'; PatchHash='2b6bce1e88a9e2ed1b5b628157eb7653eded404aefefd71521d3c1255fe2b4f5' },
+ @{ Path='tModLoader.dll'; Original='fcc6a9624b12191be4a15d714a3675440911feb8c1d374642ab1fd686f0da0a5'; Patched='f1df259d4e3d891a05f75a655b0f28f4c7382db16d82a67fd9f20e907721bf91'; PatchFile='patches\03.lsp'; PatchHash='dd4be755e012e9c05eaf82b922025ec857a5eaac008f755ad41c1583fdc9c4b0' }
+)

@@ -79,7 +79,7 @@ python tools/verify.py --game-dir /path/to/pristine/tModLoader --build-dir build
 | `patches/2026.8.3.0/` | 本次支持版本的差分数据与 SHA-256 清单 |
 | `packages/` | 不包含完整 DLL 的差分测试包 |
 
-## 参考与许可证状态
+## 参考与许可证
 
 接口顺序参考 [SteamworksSDK 1.60](https://github.com/rlabrecque/SteamworksSDK/tree/e7bb839178fc/public/steam) 与 [1.62](https://github.com/rlabrecque/SteamworksSDK/tree/34d9338aa892/public/steam)。相关项目：
 
@@ -87,4 +87,8 @@ python tools/verify.py --game-dir /path/to/pristine/tModLoader --build-dir build
 - [Steamworks.NET](https://github.com/rlabrecque/Steamworks.NET)
 - [SteamLegacyZstd](https://github.com/yuyu107/SteamLegacyZstd)
 
-本仓库暂未指定项目许可证，不为第三方游戏、SDK 或库重新授权。未包含完整 SDK 头文件、完整游戏 DLL、账号数据或 Steam 客户端文件。
+本项目原创脚本、工具代码及文档采用 [MIT 许可证](LICENSE)，版权署名为 `Copyright (c) 2026 yuyu107`。
+
+第三方游戏、Steamworks 库、SDK 及其他第三方内容不在本项目的 MIT 授权范围内，其权利和使用条件由原权利人规定。差分补丁中涉及的第三方内容也不因本项目采用 MIT 而获得重新授权。
+
+本仓库未包含完整 SDK 头文件、完整游戏 DLL、账号数据或 Steam 客户端文件。

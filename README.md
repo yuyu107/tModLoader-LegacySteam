@@ -20,10 +20,10 @@
 
 ## 下载与安装
 
-首次源码提交附带 [v0.1.0-test 差分测试包](packages/tML-Win7-LegacySteam-v0.1.0-test.zip)。点击文件页面的下载按钮下载 ZIP。
+下载 [v0.1.0 安装包](packages/tML-Win7-LegacySteam-v0.1.0.zip)（[SHA-256](packages/tML-Win7-LegacySteam-v0.1.0.sha256.txt)）。点击文件页面的下载按钮下载 ZIP。
 
 1. 关闭 tModLoader，保持 Steam 登录。
-2. 将测试包全部解压到 tModLoader 根目录，与 `tModLoader.dll` 同级。
+2. 将安装包全部解压到 tModLoader 根目录，与 `tModLoader.dll` 同级。
 3. 双击 `Install-LegacySteam.bat`，看到 `INSTALLED` 后正常启动游戏。
 4. 先验证主菜单和模组加载，再测试创意工坊。
 
@@ -66,6 +66,12 @@ python tools/verify.py --game-dir /path/to/pristine/tModLoader --build-dir build
 
 输入需为本次支持版本的原文件。构建需要 `tModLoader.dll` 和 `Libraries/steamworks.net.anycpu/2025.162.4` 中两个托管 DLL 及 Windows x64 原生 DLL。若已安装补丁，可以使用保留的原文件备份构建，目录结构需保持一致。
 
+仅重新打包仓库内已校验的差分数据，无需提供游戏 DLL：
+
+```sh
+python tools/package.py --output build/release
+```
+
 输出包括修改后的文件、差分数据、改动记录和 ZIP。完整原文件及修改后的 DLL 只存在于本地构建目录，不提交到仓库。
 
 | 路径 | 内容 |
@@ -77,7 +83,7 @@ python tools/verify.py --game-dir /path/to/pristine/tModLoader --build-dir build
 | `tools/verify.py` | 验证差分重建、导出映射和文件校验 |
 | `runtime/` | PowerShell 2.0 安装、恢复、接口预检与 C# 差分应用源码 |
 | `patches/2026.8.3.0/` | 本次支持版本的差分数据与 SHA-256 清单 |
-| `packages/` | 不包含完整 DLL 的差分测试包 |
+| `packages/` | 不包含完整 DLL 的差分安装包 |
 
 ## 参考与许可证
 

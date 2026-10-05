@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0-test",
+  "version": "0.1.0",
   "targets": [
     {
       "path": "Libraries/steamworks.net.anycpu/2025.162.4/lib/net8.0/Steamworks.NET.dll",

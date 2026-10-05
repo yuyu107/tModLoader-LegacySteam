@@ -1,4 +1,4 @@
-﻿$LegacySteamVersion = '0.1.0-test'
+﻿$LegacySteamVersion = '0.1.0'
 $LegacySteamTargets = @(
  @{ Path='Libraries\steamworks.net.anycpu\2025.162.4\lib\net8.0\Steamworks.NET.dll'; Original='c292a77537b2ca8083a055442f957b53f330da522e2472a5aad8e1b00bdacfff'; Patched='3054a1919137b857b9b43fdd51279f252d33e76793168fda6845472acb6aeba0'; PatchFile='patches\00.lsp'; PatchHash='1e48515366bb9cbf03e80beeec68d54f99eb850c0a597b7b197fc17e5b9a4e2e' },
  @{ Path='Libraries\steamworks.net.anycpu\2025.162.4\runtimes\win\lib\net8.0\Steamworks.NET.dll'; Original='f9efa5d01d4606379236411fd884664531f5a1bc0d60141024975929af91a8d8'; Patched='42942a974cf19ab0e958f62e1b4ce772f8474463ead51ce4f7d99164093b4604'; PatchFile='patches\01.lsp'; PatchHash='0df6571f4a3056bf3c1a7b64d4f43dbffa6ded51b3d361cb65440da3eb58168a' },

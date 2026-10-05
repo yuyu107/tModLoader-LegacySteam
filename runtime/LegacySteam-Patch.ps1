@@ -2,6 +2,7 @@ param([string]$Mode = 'Install')
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $pack = Join-Path $root 'LegacySteam'
+. (Join-Path $pack 'Language.ps1')
 $legacyBackup = Join-Path $root 'LegacySteam-Backup'
 $backupRoot = Join-Path $root 'LegacySteam-Backups'
 $backup = $legacyBackup
@@ -76,7 +77,7 @@ try {
  }
  if (!$matched) { $backup = Join-Path $backupRoot $gameTarget.Original }
  $statePath = Join-Path $backup 'GameFingerprint-state.txt'
- Write-Output ('Backup for this game version: ' + $backup)
+ Write-Output (T ('Backup for this game version: ' + $backup))
  $active = @(Get-WmiObject Win32_Process -Filter "Name='dotnet.exe'" | Where-Object { $_.ExecutablePath -and $_.ExecutablePath.StartsWith($root,[StringComparison]::OrdinalIgnoreCase) })
  if ($active.Count -gt 0) { throw 'Close tModLoader first.' }
  $already = $true
@@ -95,10 +96,10 @@ try {
    if ($original -ne $destination) { Copy-Item -LiteralPath $original -Destination $destination -Force }
    if ((FileHash $destination) -ne $t.Original) { throw ('Restore verification failed: ' + $t.Path) }
   }
-  Write-Output 'RESTORED: original game and Steamworks files.'
+  Write-Output (T 'RESTORED: original game and Steamworks files.')
   $success = $true
  } elseif ($already) {
-  Write-Output ('Already installed: ' + $LegacySteamVersion)
+  Write-Output (T ('Already installed: ' + $LegacySteamVersion))
   $success = $true
  } else {
   foreach ($t in $LegacySteamTargets) {
@@ -138,11 +139,14 @@ try {
    foreach ($t in $LegacySteamTargets) { Copy-Item -LiteralPath (Join-Path $backup $t.Path) -Destination (Join-Path $root $t.Path) -Force }
    throw $failure
   }
-  Write-Output ('INSTALLED: ' + $LegacySteamVersion + '. Start tModLoader normally.')
-  Write-Output 'Keep LegacySteam-Backups and older backups. Restore-LegacySteam.bat selects the matching version automatically.'
+  Write-Output (T ('INSTALLED: ' + $LegacySteamVersion + '. Start tModLoader normally.'))
+  Write-Output (T 'Keep LegacySteam-Backups and older backups. Restore-LegacySteam.bat selects the matching version automatically.')
   $success = $true
  }
-} catch { Write-Output ('ERROR: ' + $_.Exception.Message) }
+} catch {
+ Write-Output (T ('ERROR: ' + $_.Exception.Message))
+ if ($LegacySteamLanguage -ne 'en') { Write-Output ((T 'Technical details: ') + $_.Exception.ToString()) }
+}
 finally {
  if ($stage -and (Test-Path $stage)) { Remove-Item -LiteralPath $stage -Recurse -Force }
  Stop-Transcript

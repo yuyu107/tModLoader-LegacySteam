@@ -1,5 +1,6 @@
-﻿param([string]$Root)
+param([string]$Root)
 $ErrorActionPreference = 'Stop'
+. (Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) 'Language.ps1')
 $lines = New-Object System.Collections.Generic.List[string]
 $code = 1
 try {
@@ -27,10 +28,13 @@ public static class LegacyInterfaceCheck {
   [Runtime.InteropServices.Marshal]::Copy($bytes,0,$ptr,$bytes.Length)
   $errorText = New-Object System.Text.StringBuilder 1024
   $result = [LegacyInterfaceCheck]::SteamInternal_SteamAPI_Init($ptr,$errorText)
-  $lines.Add('Full legacy interface list: result=' + $result + '; ' + $errorText.ToString())
+  $lines.Add((T ('Full legacy interface list: result=' + $result + '; ' + $errorText.ToString())))
   if ($result -eq 0) { [LegacyInterfaceCheck]::SteamAPI_Shutdown(); $code = 0 }
  } finally { [Runtime.InteropServices.Marshal]::FreeHGlobal($ptr) }
-} catch { $lines.Add($_.Exception.ToString()) }
+} catch {
+ $lines.Add((T $_.Exception.Message))
+ $lines.Add((T 'Technical details: ') + $_.Exception.ToString())
+}
 $lines | ForEach-Object { Write-Output $_ }
 [IO.File]::WriteAllLines((Join-Path $Root 'tML-LegacySteam-Check.txt'),$lines.ToArray(),[Text.Encoding]::UTF8)
 exit $code

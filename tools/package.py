@@ -2,7 +2,7 @@
 from pathlib import Path
 import hashlib,json,shutil,zipfile
 from delta import make_patch,apply_patch
-VERSION='0.2.0-test1'
+VERSION='0.2.0-test2'
 
 def package(original_root,modified_root,output,manifest):
     root=Path(__file__).resolve().parent.parent

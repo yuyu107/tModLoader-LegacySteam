@@ -2,7 +2,7 @@
 from pathlib import Path
 import hashlib,json,shutil,zipfile
 from delta import make_patch,apply_patch
-VERSION='0.1.0'
+VERSION='0.2.0-test1'
 
 def package(original_root,modified_root,output,manifest):
     root=Path(__file__).resolve().parent.parent
@@ -41,11 +41,13 @@ def package_existing(patch_root, output):
     """Package published, hash-checked deltas without requiring game DLLs."""
     root = Path(__file__).resolve().parent.parent
     manifest = json.loads((patch_root / 'manifest.json').read_text())
-    assert manifest['version'] == VERSION, 'Patch manifest version mismatch'
+    assert manifest['version'] == '0.1.0', 'Patch data version mismatch'
     destination = output / 'package'
     if destination.exists():
         shutil.rmtree(destination)
     shutil.copytree(root / 'runtime', destination)
+    runtime_manifest = destination / 'LegacySteam/manifest.ps1'
+    runtime_manifest.write_text(runtime_manifest.read_text(encoding='utf-8-sig').replace("$LegacySteamVersion = '0.1.0'", "$LegacySteamVersion = '" + VERSION + "'"), encoding='utf-8-sig')
     patch_dir = destination / 'LegacySteam/patches'
     patch_dir.mkdir(exist_ok=True)
     for item in manifest['targets']:

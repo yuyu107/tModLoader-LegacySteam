@@ -1,6 +1,6 @@
 # tModLoader-LegacySteam
 
-为旧版 Steam 客户端适配 tModLoader 的 Steamworks 接口。当前版本基于本次 Win7 实测成功的 Test2，使用差分补丁修改本地原文件，不分发完整游戏 DLL。
+为旧版 Steam 客户端适配 tModLoader 的 Steamworks 接口。v0.1.0 正式版已发布，并通过 Windows 7 / 8.1 64 位实测，使用差分补丁修改本地原文件，不分发完整游戏 DLL。
 
 ## 当前状态
 
@@ -22,12 +22,13 @@ tModLoader 不支持 32 位 Windows，本补丁也不提供 32 位系统支持�
 
 ## 下载与安装
 
-下载 [v0.1.0 安装包](packages/tML-Win7-LegacySteam-v0.1.0.zip)（[SHA-256](packages/tML-Win7-LegacySteam-v0.1.0.sha256.txt)）。点击文件页面的下载按钮下载 ZIP。
+前往 [v0.1.0 正式版 Release](https://github.com/yuyu107/tModLoader-LegacySteam/releases/tag/v0.1.0)，下载 Assets 中的 [安装包 ZIP](https://github.com/yuyu107/tModLoader-LegacySteam/releases/download/v0.1.0/tML-Win7-LegacySteam-v0.1.0.zip)（[SHA-256 校验文件](packages/tML-Win7-LegacySteam-v0.1.0.sha256.txt)）。请下载安装包，而非 GitHub 自动生成的 Source code 压缩包。
 
 1. 关闭 tModLoader，保持 Steam 登录。
-2. 将安装包全部解压到 tModLoader 根目录，与 `tModLoader.dll` 同级。
-3. 双击 `Install-LegacySteam.bat`，看到 `INSTALLED` 后正常启动游戏。
-4. 先验证主菜单和模组加载，再测试创意工坊。
+2. 在 Steam 库中右键 tModLoader，选择“管理 → 浏览本地文件”，打开安装目录。
+3. 将安装包全部解压到 tModLoader 根目录，与 `tModLoader.dll` 同级。
+4. 双击 `Install-LegacySteam.bat`，看到 `INSTALLED` 后正常启动游戏。
+5. 先验证主菜单和模组加载，再测试创意工坊。
 
 只安装本补丁不会增加 Zstd 下载支持。下载使用 Zstd 压缩的模组时，还需按 [SteamLegacyZstd](https://github.com/yuyu107/SteamLegacyZstd) 的说明使用下载补丁。
 

@@ -2,7 +2,9 @@ param([string]$Mode = 'Install')
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $pack = Join-Path $root 'LegacySteam'
-$backup = Join-Path $root 'LegacySteam-Backup'
+$legacyBackup = Join-Path $root 'LegacySteam-Backup'
+$backupRoot = Join-Path $root 'LegacySteam-Backups'
+$backup = $legacyBackup
 $previousBackup = Join-Path $root 'LegacySteam-Test1-Backup'
 $stage = $null
 $success = $false
@@ -15,8 +17,16 @@ function FileHash([string]$Path) {
 function OriginalSource($Target) {
  $saved = Join-Path $backup $Target.Path
  if ((Test-Path $saved) -and (FileHash $saved) -eq $Target.Original) { return $saved }
+ $saved = Join-Path $legacyBackup $Target.Path
+ if ((Test-Path $saved) -and (FileHash $saved) -eq $Target.Original) { return $saved }
  $saved = Join-Path $previousBackup $Target.Path
  if ((Test-Path $saved) -and (FileHash $saved) -eq $Target.Original) { return $saved }
+ if ($Target.Path -ne 'tModLoader.dll' -and (Test-Path $backupRoot)) {
+  foreach ($directory in @(Get-ChildItem -LiteralPath $backupRoot | Where-Object { $_.PSIsContainer })) {
+   $saved = Join-Path $directory.FullName $Target.Path
+   if ((Test-Path $saved) -and (FileHash $saved) -eq $Target.Original) { return $saved }
+  }
+ }
  $current = Join-Path $root $Target.Path
  if ((Test-Path $current) -and (FileHash $current) -eq $Target.Original) { return $current }
  throw ('Original file or valid backup missing: ' + $Target.Path)
@@ -29,29 +39,44 @@ try {
  Add-Type -Path (Join-Path $pack 'GameFingerprint.cs')
  $gameTarget = $LegacySteamTargets | Where-Object { $_.Path -eq 'tModLoader.dll' }
  $gameCurrent = Join-Path $root 'tModLoader.dll'
- $gameSaved = Join-Path $backup 'tModLoader.dll'
- $statePath = Join-Path $backup 'GameFingerprint-state.txt'
+ # Select a version-specific backup without moving or deleting older backups.
+ if (!(Test-Path $gameCurrent)) { throw 'Target missing: tModLoader.dll' }
+ $currentGameHash = FileHash $gameCurrent
  $dynamicGame = $null
- if (Test-Path $statePath) {
-  $state = @(Get-Content -LiteralPath $statePath)
-  if ($state.Count -ne 2 -or $state[0] -notmatch '^[0-9a-f]{64}$' -or $state[1] -notmatch '^[0-9a-f]{64}$') { throw 'Invalid game backup state.' }
-  if (!(Test-Path $gameSaved) -or (FileHash $gameSaved) -ne $state[0]) { throw 'Game backup is missing or damaged.' }
+ $matched = $false
+ $candidates = @($legacyBackup)
+ if (Test-Path $backupRoot) {
+  $candidates += @(Get-ChildItem -LiteralPath $backupRoot | Where-Object { $_.PSIsContainer } | ForEach-Object { $_.FullName })
+ }
+ foreach ($candidate in $candidates) {
+  $candidateState = Join-Path $candidate 'GameFingerprint-state.txt'
+  if (!(Test-Path $candidateState)) { continue }
+  $state = @(Get-Content -LiteralPath $candidateState)
+  if ($state.Count -ne 2 -or $state[0] -notmatch '^[0-9a-f]{64}$' -or $state[1] -notmatch '^[0-9a-f]{64}$') { continue }
+  if ($currentGameHash -ne $state[0] -and $currentGameHash -ne $state[1]) { continue }
+  $candidateGame = Join-Path $candidate 'tModLoader.dll'
+  if (!(Test-Path $candidateGame) -or (FileHash $candidateGame) -ne $state[0]) { throw 'Matching game backup is missing or damaged.' }
+  $backup = $candidate
   $gameTarget.Original = $state[0]; $gameTarget.Patched = $state[1]
+  $matched = $true
+  break
  }
- if ((Test-Path $gameCurrent) -and (FileHash $gameCurrent) -ne $gameTarget.Patched) {
-  $dynamicGame = [LegacyGameFingerprint]::Apply([IO.File]::ReadAllBytes($gameCurrent),'3bae3a5ecad22eec751e154f68e09361','4b27c35644619f18f97459aa122ec3e1')
-  $gameTarget.Original = FileHash $gameCurrent
-  $sha = [Security.Cryptography.SHA256]::Create()
-  try { $gameTarget.Patched = ([BitConverter]::ToString($sha.ComputeHash($dynamicGame))).Replace('-','').ToLowerInvariant() } finally { $sha.Clear() }
-  if ((Test-Path $gameSaved) -and (FileHash $gameSaved) -ne $gameTarget.Original) { throw 'Game version changed since backup. Preserve the old backup, then move LegacySteam-Backup outside the game folder and retry.' }
- }
- elseif ((Test-Path $gameCurrent) -and (FileHash $gameCurrent) -eq $gameTarget.Patched) {
+ if ($currentGameHash -eq $gameTarget.Patched) {
+  # Includes upgrading an existing v0.1.0 installation.
   $source = OriginalSource $gameTarget
   $dynamicGame = [LegacyGameFingerprint]::Apply([IO.File]::ReadAllBytes($source),'3bae3a5ecad22eec751e154f68e09361','4b27c35644619f18f97459aa122ec3e1')
   $sha = [Security.Cryptography.SHA256]::Create()
   try { $verified = ([BitConverter]::ToString($sha.ComputeHash($dynamicGame))).Replace('-','').ToLowerInvariant() } finally { $sha.Clear() }
   if ($verified -ne $gameTarget.Patched) { throw 'Game fingerprint state does not match regenerated output.' }
+ } else {
+  $dynamicGame = [LegacyGameFingerprint]::Apply([IO.File]::ReadAllBytes($gameCurrent),'3bae3a5ecad22eec751e154f68e09361','4b27c35644619f18f97459aa122ec3e1')
+  $gameTarget.Original = $currentGameHash
+  $sha = [Security.Cryptography.SHA256]::Create()
+  try { $gameTarget.Patched = ([BitConverter]::ToString($sha.ComputeHash($dynamicGame))).Replace('-','').ToLowerInvariant() } finally { $sha.Clear() }
  }
+ if (!$matched) { $backup = Join-Path $backupRoot $gameTarget.Original }
+ $statePath = Join-Path $backup 'GameFingerprint-state.txt'
+ Write-Output ('Backup for this game version: ' + $backup)
  $active = @(Get-WmiObject Win32_Process -Filter "Name='dotnet.exe'" | Where-Object { $_.ExecutablePath -and $_.ExecutablePath.StartsWith($root,[StringComparison]::OrdinalIgnoreCase) })
  if ($active.Count -gt 0) { throw 'Close tModLoader first.' }
  $already = $true
@@ -114,7 +139,7 @@ try {
    throw $failure
   }
   Write-Output ('INSTALLED: ' + $LegacySteamVersion + '. Start tModLoader normally.')
-  Write-Output 'Keep LegacySteam-Backup. Restore-LegacySteam.bat reverses this patch.'
+  Write-Output 'Keep LegacySteam-Backups and older backups. Restore-LegacySteam.bat selects the matching version automatically.'
   $success = $true
  }
 } catch { Write-Output ('ERROR: ' + $_.Exception.Message) }

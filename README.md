@@ -4,11 +4,13 @@
 
 ## 下一版测试：自动识别游戏本体
 
-`v0.2.0-test2` 允许 tModLoader 本体 SHA-256 变化，但三份 Steamworks 库仍必须与 v0.1.0 支持的原文件或补丁文件逐字节一致。安装器解析 PE / CLR 的 `#US` 用户字符串堆，要求原生库的预期 MD5 恰好出现一次，只替换这一条字符串；不关闭完整性或授权检查。新版 Steamworks 库、签名游戏程序集或未知元数据会停止安装。
+`v0.2.0-test3` 允许 tModLoader 本体 SHA-256 变化，但三份 Steamworks 库仍必须与 v0.1.0 支持的原文件或补丁文件逐字节一致。安装器解析 PE / CLR 的 `#US` 用户字符串堆，要求原生库的预期 MD5 恰好出现一次，只替换这一条字符串；不关闭完整性或授权检查。新版 Steamworks 库、签名游戏程序集或未知元数据会停止安装。
 
 这只是兼容识别规则，不保证未来游戏逻辑或第三方模组兼容。测试版尚未完成 Windows 实机验证，正式 Release 仍为 v0.1.0。请先在当前版本测试安装、重复安装、启动及恢复。
 
 新备份保存在 `LegacySteam-Backups/<原游戏文件SHA-256>/`，每个版本分别保存原文件及 `GameFingerprint-state.txt`。安装、重复安装和恢复会按当前游戏文件哈希自动选择备份，无需删除或移动旧备份；原有 `LegacySteam-Backup`、`LegacySteam-Test1-Backup` 仍可作为旧版原文件来源。请保留这些备份目录。
+
+提示语言按 Windows 系统界面语言自动选择：简体中文（zh-CN / zh-SG / zh-Hans）、繁体中文（zh-TW / zh-HK / zh-MO / zh-Hant），其他语言显示英文。日志保留原始异常及 Steam 返回信息，便于排查。
 
 ## 当前状态
 

@@ -1,4 +1,4 @@
-﻿param([string]$Mode = 'Install')
+param([string]$Mode = 'Install')
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $pack = Join-Path $root 'LegacySteam'
@@ -26,6 +26,32 @@ try {
  if ($Mode -ne 'Install' -and $Mode -ne 'Restore') { throw 'Invalid mode.' }
  if ([IntPtr]::Size -ne 8) { throw 'Use the supplied 64-bit BAT launcher.' }
  . (Join-Path $pack 'manifest.ps1')
+ Add-Type -Path (Join-Path $pack 'GameFingerprint.cs')
+ $gameTarget = $LegacySteamTargets | Where-Object { $_.Path -eq 'tModLoader.dll' }
+ $gameCurrent = Join-Path $root 'tModLoader.dll'
+ $gameSaved = Join-Path $backup 'tModLoader.dll'
+ $statePath = Join-Path $backup 'GameFingerprint-state.txt'
+ $dynamicGame = $null
+ if (Test-Path $statePath) {
+  $state = @(Get-Content -LiteralPath $statePath)
+  if ($state.Count -ne 2 -or $state[0] -notmatch '^[0-9a-f]{64}$' -or $state[1] -notmatch '^[0-9a-f]{64}$') { throw 'Invalid game backup state.' }
+  if (!(Test-Path $gameSaved) -or (FileHash $gameSaved) -ne $state[0]) { throw 'Game backup is missing or damaged.' }
+  $gameTarget.Original = $state[0]; $gameTarget.Patched = $state[1]
+ }
+ if ((Test-Path $gameCurrent) -and (FileHash $gameCurrent) -ne $gameTarget.Patched) {
+  $dynamicGame = [LegacyGameFingerprint]::Apply([IO.File]::ReadAllBytes($gameCurrent),'3bae3a5ecad22eec751e154f68e09361','4b27c35644619f18f97459aa122ec3e1')
+  $gameTarget.Original = FileHash $gameCurrent
+  $sha = [Security.Cryptography.SHA256]::Create()
+  try { $gameTarget.Patched = ([BitConverter]::ToString($sha.ComputeHash($dynamicGame))).Replace('-','').ToLowerInvariant() } finally { $sha.Clear() }
+  if ((Test-Path $gameSaved) -and (FileHash $gameSaved) -ne $gameTarget.Original) { throw 'Game version changed since backup. Preserve the old backup, then move LegacySteam-Backup outside the game folder and retry.' }
+ }
+ elseif ((Test-Path $gameCurrent) -and (FileHash $gameCurrent) -eq $gameTarget.Patched) {
+  $source = OriginalSource $gameTarget
+  $dynamicGame = [LegacyGameFingerprint]::Apply([IO.File]::ReadAllBytes($source),'3bae3a5ecad22eec751e154f68e09361','4b27c35644619f18f97459aa122ec3e1')
+  $sha = [Security.Cryptography.SHA256]::Create()
+  try { $verified = ([BitConverter]::ToString($sha.ComputeHash($dynamicGame))).Replace('-','').ToLowerInvariant() } finally { $sha.Clear() }
+  if ($verified -ne $gameTarget.Patched) { throw 'Game fingerprint state does not match regenerated output.' }
+ }
  $active = @(Get-WmiObject Win32_Process -Filter "Name='dotnet.exe'" | Where-Object { $_.ExecutablePath -and $_.ExecutablePath.StartsWith($root,[StringComparison]::OrdinalIgnoreCase) })
  if ($active.Count -gt 0) { throw 'Close tModLoader first.' }
  $already = $true
@@ -70,12 +96,13 @@ try {
     New-Item -ItemType Directory -Path (Split-Path $saved) -Force | Out-Null
     Copy-Item -LiteralPath $original -Destination $saved
    }
-   $result = [LegacyDeltaPatch]::Apply([IO.File]::ReadAllBytes($saved),[IO.File]::ReadAllBytes((Join-Path $pack $t.PatchFile)))
+   if ($t.Path -eq 'tModLoader.dll') { $result = $dynamicGame } else { $result = [LegacyDeltaPatch]::Apply([IO.File]::ReadAllBytes($saved),[IO.File]::ReadAllBytes((Join-Path $pack $t.PatchFile))) }
    $destination = Join-Path $stage $t.Path
    New-Item -ItemType Directory -Path (Split-Path $destination) -Force | Out-Null
    [IO.File]::WriteAllBytes($destination,$result)
    if ((FileHash $destination) -ne $t.Patched) { throw ('Patched output verification failed: ' + $t.Path) }
   }
+  [IO.File]::WriteAllLines($statePath,[string[]]@($gameTarget.Original,$gameTarget.Patched))
   try {
    foreach ($t in $LegacySteamTargets) {
     Copy-Item -LiteralPath (Join-Path $stage $t.Path) -Destination (Join-Path $root $t.Path) -Force

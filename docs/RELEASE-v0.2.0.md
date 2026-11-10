@@ -26,7 +26,7 @@
 
 ## 系统、下载与恢复
 
-- Windows 7 SP1 / Windows 8.1 64 位；不支持 32 位系统。Win7 测试环境需要配合 VxKex。
+- Windows 7 SP1 / Windows 8.1 64 位；不支持 32 位系统。
 - 模组的 Zstd 下载仍需配合 [SteamLegacyZstd](https://github.com/yuyu107/SteamLegacyZstd)。
 - 关闭游戏后运行 `Restore-LegacySteam.bat`，或通过 Steam“验证游戏文件的完整性”恢复官方文件。Steam 验证后可能需要重新修补，额外脚本和备份可能保留。
 - 联机、好友邀请、云存档尚未完整验证；尚未逐一验证所有后续 tModLoader 版本。

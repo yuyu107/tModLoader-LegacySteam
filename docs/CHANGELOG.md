@@ -15,7 +15,7 @@
 - 安装包包含 MIT 许可证、中文使用说明、更新记录和校验清单。
 - 提供 ZIP 的 SHA-256 校验文件及无需游戏 DLL 的重新打包命令。
 
-v0.1.0 差分安装器已通过 Windows 7 SP1 64 位、Windows 8.1 64 位实测；启动、配合 SteamLegacyZstd 下载模组、模组加载和进入游戏已验证。仅支持 tModLoader 2026.8.3.0，不支持 32 位 Windows；Win7 测试环境需要配合 VxKex。Steam 联机、邀请和云存档尚未验证。
+v0.1.0 差分安装器已通过 Windows 7 SP1 64 位、Windows 8.1 64 位实测；启动、配合 SteamLegacyZstd 下载模组、模组加载和进入游戏已验证。仅支持 tModLoader 2026.8.3.0，不支持 32 位 Windows；Steam 联机、邀请和云存档尚未验证。
 
 ## 0.1.0-test
 

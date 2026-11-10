@@ -1,5 +1,7 @@
 # tModLoader-LegacySteam
 
+简体中文 | [English](README.en.md)
+
 为旧版 Steam 客户端适配 tModLoader 的 Steamworks 接口。**v0.2.0 正式版**支持自动识别兼容的 tModLoader 本体版本、多版本备份及简体中文 / 繁体中文 / 英文提示。使用差分补丁修改本地原文件，不分发完整游戏 DLL。
 
 v0.1.0 仅支持 tModLoader 2026.8.3.0，游戏更新后请升级到 v0.2.0，不要继续使用旧安装包。
@@ -26,7 +28,6 @@ Steam 更新 tModLoader 或验证游戏文件，可能会覆盖补丁。关闭�
 ## 兼容范围
 
 - 支持 Windows 7 SP1 / Windows 8.1 **64 位**；tModLoader 不支持 32 位系统。
-- Win7 测试环境需要配合 VxKex，本补丁不代替系统兼容层，也不修改 .NET 运行时。
 - v0.2.0 不再固定 tModLoader 本体的整体 SHA-256；本体更新但三份 Steamworks 库仍为支持文件时，可按 CLR 用户字符串记录定位原生 API 的预期 MD5 并更新它。
 - 三份 Steamworks 库仍严格按 SHA-256 校验，当前适配 `steamworks.net.anycpu/2025.162.4` 的已知文件。不是仅凭目录版本号就允许修补；未知库、强名称签名本体或无法唯一定位的结构会停止。
 - 旧版基础适配已在 Win7 / Win8.1 验证启动、模组加载与使用；自动识别安装流程已有成功反馈。尚未逐一验证所有后续 tModLoader 版本，联机、好友邀请、云存档也未完整验证。

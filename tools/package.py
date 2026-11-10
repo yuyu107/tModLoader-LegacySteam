@@ -29,6 +29,7 @@ def package(original_root,modified_root,output,manifest):
     (destination/'LegacySteam/manifest.ps1').write_bytes(('\r\n'.join(lines)+'\r\n').encode('utf-8-sig'))
     (output/'manifest.json').write_text(json.dumps({'version':VERSION,'targets':entries},indent=2)+'\n')
     shutil.copy(root/'README.md',destination/'README.md')
+    shutil.copy(root/'README.en.md',destination/'README.en.md')
     shutil.copy(root/'LICENSE',destination/'LICENSE')
     archive=output/f'tML-Win7-LegacySteam-v{VERSION}.zip'
     with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED) as z:
@@ -56,7 +57,7 @@ def package_existing(patch_root, output):
         assert len(data) == item['patch_bytes']
         assert hashlib.sha256(data).hexdigest() == item['patch_hash']
         (patch_dir / name).write_bytes(data)
-    for name in ('README.md', 'LICENSE'):
+    for name in ('README.md', 'README.en.md', 'LICENSE'):
         shutil.copy(root / name, destination / name)
     shutil.copy(root / 'docs/CHANGELOG.md', destination / 'CHANGELOG.md')
     shutil.copy(patch_root / 'manifest.json', destination / 'LegacySteam/manifest.json')

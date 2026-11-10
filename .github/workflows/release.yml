@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['tools/package.py', '.github/workflows/release.yml']
+    paths: ['tools/package.py', '.github/workflows/release.yml', 'README.md', 'README.en.md', 'docs/RELEASE-v0.2.0.md']
 permissions:
   contents: write
 concurrency:
@@ -24,7 +24,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if gh release view v0.2.0 >/dev/null 2>&1; then
-            echo 'v0.2.0 already exists; leaving published assets unchanged.'
-            exit 0
-          fi
+            gh release edit v0.2.0 --notes-file docs/RELEASE-v0.2.0.md
+            gh release upload v0.2.0 build/release/tML-Win7-LegacySteam-v0.2.0.zip build/release/tML-Win7-LegacySteam-v0.2.0.sha256.txt --clobber
+          else
           gh release create v0.2.0 --target "$GITHUB_SHA" --title 'v0.2.0：自动识别兼容版本、多版本备份与三语言提示' --notes-file docs/RELEASE-v0.2.0.md build/release/tML-Win7-LegacySteam-v0.2.0.zip build/release/tML-Win7-LegacySteam-v0.2.0.sha256.txt --latest
+          fi
+      - name: Correct historical release wording
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view v0.1.0 --json body --jq .body > /tmp/legacy-release-notes.md
+          python -c "from pathlib import Path; p=Path('/tmp/legacy-release-notes.md'); p.write_text(p.read_text().replace('Win7 测试环境需要配合 VxKex。', ''))"
+          gh release edit v0.1.0 --notes-file /tmp/legacy-release-notes.md

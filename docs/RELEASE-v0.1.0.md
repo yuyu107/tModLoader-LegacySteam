@@ -15,7 +15,7 @@
 - 使用差分补丁，不包含完整游戏或 Steamworks DLL。
 - 模组的 Zstd 下载需配合 [SteamLegacyZstd](https://github.com/yuyu107/SteamLegacyZstd)。
 - v0.1.0 差分安装器已通过 Win7 / Win8.1 64 位实测，启动、模组下载、加载和进入游戏已验证。
-- 不支持 32 位 Windows；Win7 测试环境需要配合 VxKex。
+- 不支持 32 位 Windows。
 - Steam 联机、好友邀请和云存档尚未验证。
 - 仅支持清单中的文件版本，游戏更新后可能需要重新适配。
 

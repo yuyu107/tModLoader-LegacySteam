@@ -1,0 +1,30 @@
+name: Publish stable release
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['tools/package.py', '.github/workflows/release.yml']
+permissions:
+  contents: write
+concurrency:
+  group: stable-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Build distribution
+        run: python tools/package.py --output build/release
+      - name: Publish v0.2.0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view v0.2.0 >/dev/null 2>&1; then
+            echo 'v0.2.0 already exists; leaving published assets unchanged.'
+            exit 0
+          fi
+          gh release create v0.2.0 --target "$GITHUB_SHA" --title 'v0.2.0：自动识别兼容版本、多版本备份与三语言提示' --notes-file docs/RELEASE-v0.2.0.md build/release/tML-Win7-LegacySteam-v0.2.0.zip build/release/tML-Win7-LegacySteam-v0.2.0.sha256.txt --latest

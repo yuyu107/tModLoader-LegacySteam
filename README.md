@@ -1,51 +1,48 @@
 # tModLoader-LegacySteam
 
-为旧版 Steam 客户端适配 tModLoader 的 Steamworks 接口。v0.1.0 正式版已发布，并通过 Windows 7 / 8.1 64 位实测，使用差分补丁修改本地原文件，不分发完整游戏 DLL。
+为旧版 Steam 客户端适配 tModLoader 的 Steamworks 接口。**v0.2.0 正式版**支持自动识别兼容的 tModLoader 本体版本、多版本备份及简体中文 / 繁体中文 / 英文提示。使用差分补丁修改本地原文件，不分发完整游戏 DLL。
 
-## 当前状态
-
-| 项目 | 已验证范围 |
-| --- | --- |
-| 系统 | Windows 7 SP1 64 位、Windows 8.1 64 位 |
-| Steam | `1730853000`，2024 年 11 月客户端 |
-| tModLoader | `2026.8.3.0`，日志显示 `1.4.4.9+2026.08.3.0` |
-| Steamworks.NET.AnyCPU | `2025.162.4` |
-| 启动 | 已在 Windows 7 / 8.1 64 位成功启动 |
-| 创意工坊模组下载 | 配合 [SteamLegacyZstd](https://github.com/yuyu107/SteamLegacyZstd) 成功下载 |
-| 模组加载和使用 | 已通过实测 |
-| Steam 联机、好友邀请、云存档 | 尚未验证 |
-| 本仓库差分安装器 | 输出与已实测 Test2 逐字节一致；v0.1.0 已通过 Windows 7 / 8.1 实测 |
-
-tModLoader 不支持 32 位 Windows，本补丁也不提供 32 位系统支持。Win7 测试环境需要配合 VxKex；本补丁不替代系统兼容层。
-
-目前只针对上述文件版本。安装器通过 SHA-256 识别输入和输出，不会强行修改未知版本。
+v0.1.0 仅支持 tModLoader 2026.8.3.0，游戏更新后请升级到 v0.2.0，不要继续使用旧安装包。
 
 ## 下载与安装
 
-前往 [v0.1.0 正式版 Release](https://github.com/yuyu107/tModLoader-LegacySteam/releases/tag/v0.1.0)，下载 Assets 中的 [安装包 ZIP](https://github.com/yuyu107/tModLoader-LegacySteam/releases/download/v0.1.0/tML-Win7-LegacySteam-v0.1.0.zip)（[SHA-256 校验文件](packages/tML-Win7-LegacySteam-v0.1.0.sha256.txt)）。请下载安装包，而非 GitHub 自动生成的 Source code 压缩包。
+前往 [正式版发布页面](https://github.com/yuyu107/tModLoader-LegacySteam/releases)，下载 v0.2.0 的 `tML-Win7-LegacySteam-v0.2.0.zip`。请下载 Assets 中的安装包，不要下载自动生成的 Source code 压缩包。
 
-1. 关闭 tModLoader，保持 Steam 登录。
-2. 在 Steam 库中右键 tModLoader，选择“管理 → 浏览本地文件”，打开安装目录。
-3. 将安装包全部解压到 tModLoader 根目录，与 `tModLoader.dll` 同级。
-4. 双击 `Install-LegacySteam.bat`，看到 `INSTALLED` 后正常启动游戏。
-5. 先验证主菜单和模组加载，再测试创意工坊。
+1. 关闭 tModLoader，保持 Steam 已登录。
+2. 在 Steam 库中右键 tModLoader，选择“管理 → 浏览本地文件”。
+3. 将安装包内全部文件解压到该目录，与 `tModLoader.dll` 同级，覆盖旧补丁文件。
+4. 运行 `Install-LegacySteam.bat`，看到“安装完成”或 `INSTALLED` 后正常启动游戏。
 
-只安装本补丁不会增加 Zstd 下载支持。下载使用 Zstd 压缩的模组时，还需按 [SteamLegacyZstd](https://github.com/yuyu107/SteamLegacyZstd) 的说明使用下载补丁。
+从 v0.1.0 或 0.2 测试版升级时，不必先恢复原文件，也不要删除备份目录。
 
-从 Test1 / Test1-r2 / Test2 升级时，保留原来的 `LegacySteam-Test1-Backup`。安装器可从该备份读取原文件，不必先恢复。新安装生成 `LegacySteam-Backup`，请保留。
+## 游戏自动更新后怎么办
 
-脚本兼容 Win7 默认的 Windows PowerShell 2.0 / .NET Framework 环境，用户端不需要 Python。运行时请与 Steam 保持相同权限。本补丁不安装或修改 tModLoader 的 .NET 运行时。
+Steam 更新 tModLoader 或验证游戏文件，可能会覆盖补丁。关闭游戏、保持 Steam 登录，再运行一次 `Install-LegacySteam.bat` 即可重新检查并修补支持的文件。
+
+新备份保存在 `LegacySteam-Backups/<原游戏文件SHA-256>/`，不同游戏文件版本分别保存。安装与恢复会自动选择对应备份，无需删除或移动旧备份。旧目录 `LegacySteam-Backup`、`LegacySteam-Test1-Backup` 仍可读取，请一并保留。
+
+若提示“不支持的文件”或无法定位校验值，请到发布页面查看新版补丁，并反馈安装日志和 tModLoader 版本。新版 Steamworks 库需要另行适配。
+
+## 兼容范围
+
+- 支持 Windows 7 SP1 / Windows 8.1 **64 位**；tModLoader 不支持 32 位系统。
+- Win7 测试环境需要配合 VxKex，本补丁不代替系统兼容层，也不修改 .NET 运行时。
+- v0.2.0 不再固定 tModLoader 本体的整体 SHA-256；本体更新但三份 Steamworks 库仍为支持文件时，可按 CLR 用户字符串记录定位原生 API 的预期 MD5 并更新它。
+- 三份 Steamworks 库仍严格按 SHA-256 校验，当前适配 `steamworks.net.anycpu/2025.162.4` 的已知文件。不是仅凭目录版本号就允许修补；未知库、强名称签名本体或无法唯一定位的结构会停止。
+- 旧版基础适配已在 Win7 / Win8.1 验证启动、模组加载与使用；自动识别安装流程已有成功反馈。尚未逐一验证所有后续 tModLoader 版本，联机、好友邀请、云存档也未完整验证。
+- 本补丁不增加 Zstd 下载支持。下载使用 Zstd 压缩的模组时，还需配合 [SteamLegacyZstd](https://github.com/yuyu107/SteamLegacyZstd)。
+
+系统界面语言为简体中文（zh-CN / zh-SG / zh-Hans）时显示简体，繁体中文（zh-TW / zh-HK / zh-MO / zh-Hant）时显示繁体，其余语言显示英文。日志保留 Steam 原始输出和异常信息。
 
 ## 恢复与反馈
 
-关闭游戏，运行本包的 `Restore-LegacySteam.bat`，恢复原来的四个文件。Steam 验证文件或更新游戏可能覆盖补丁；不同版本需重新适配。
+关闭游戏，运行当前包的 `Restore-LegacySteam.bat`，自动选择对应备份恢复原文件。
 
-安装阶段失败请提交：
+也可以在 Steam 的“属性 → 已安装文件”（旧版客户端可能叫“本地文件”）中选择“验证游戏文件的完整性”，重新获取当前分支的官方文件。验证可能移除补丁，也可能更新游戏；补丁脚本和备份等额外文件可能仍会保留。若仍需修补，再运行新版安装脚本。
 
-- `tML-LegacySteam-Install.txt`
-- `tML-LegacySteam-Check.txt`（若已生成）
+安装失败请提交 `tML-LegacySteam-Install.txt` 和 `tML-LegacySteam-Check.txt`（若生成）。启动或游戏内出错，请附新生成的 `tModLoader-Logs`、错误截图，以及系统、Steam 和 tModLoader 版本。公开日志前检查账号名、路径和 Steam ID。
 
-启动或游戏内出错，请提交新生成的 `tModLoader-Logs` 和错误截图，同时说明 Steam、系统、tModLoader 版本。公开日志前请检查其中的账号名、路径和 Steam ID。
+用户端不需要 Python；脚本按 Win7 Windows PowerShell 2.0 编写。运行时请与 Steam 保持相同权限。
 
 ## 修改内容
 
